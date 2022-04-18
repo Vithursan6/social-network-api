@@ -1,3 +1,4 @@
+const res = require('express/lib/response');
 const { User, Thought } = require('../models');
 
 const userController = {
@@ -44,7 +45,46 @@ const userController = {
                 res.status(500).json(err);
             });
             
+    },
+
+    //PUT user
+    putUser(req, res) {
+        User.findOneAndUpdate(
+            { _id: req.params.userId },
+            { $set: req.body },
+            { runValidators: true, new: true}
+        )
+        .then((dbUserData) => {
+            if(!dbUserData) {
+                return res.status(404).json({ message: "UserId does not exist!"});
+            }
+            res.json(dbUserData);
+        })
+        .catch((err) => {
+            console.log(err);
+            res.status(500).json(err);
+        });
+    },
+
+    //DELETE user
+    delUser(req, res) {
+        User.findOneAndDelete({ _id: req.params.userId })
+            .then((dbUserData) => {
+                if (!dbUserData) {
+                    return res.status(404).json({ message: "UserId does not exist!" });
+                }
+                return Thought.deleteMany({ _id: { $in: dbUserData.thoughts }});
+            })
+            .then(() => {
+                res.json({ message: "User deleted!"});
+            })
+            .catch((err) => {
+                console.log(err);
+                res.status(500).json(err);
+            });
     }
+
+
     
 };
 

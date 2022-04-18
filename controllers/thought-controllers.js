@@ -48,6 +48,50 @@ const thoughtController = {
             console.log(err);
             res.status(500).json(err)
         });
+    },
+
+    //PUT thought
+    putThought(req, res) {
+        Thought.findOneAndUpdate(
+            { _id: req.params.thoughtId },
+            { $set: req.body },
+            { runValidators: true, new: true}
+            )
+            .then((dbThoughtData) => {
+                if (!dbThoughtData) {
+                    return res.status(404).json({ message: "ThoughtId does not exist!" });
+                }
+                res.json(dbThoughtData);
+            })
+            .catch((err) => {
+                console.log(err);
+                res.status(500).json(err);
+            });
+    },
+
+    //DELETE thought
+    delThought(req, res) {
+        Thought.findOneAndRemove({ _id: req.params.thoughtId})
+            .then((dbThoughtData) => {
+                if (!dbThoughtData) {
+                    return res.status(404).json({ message: "ThoughtId does not exist!" });
+                }
+                return User.findOneAndUpdate(
+                    { thoughts: req.params.thoughtId },
+                    { $pull: { thoughts: req.params.thoughtId }},
+                    { new: true }
+                );
+            })
+            .then((dbUserData) => {
+                if (!dbUserData) {
+                    return res.status(404).json({ message: "Thought deleted!" });
+                }
+                res.json({ message: "Success! Thought deleted!" });
+            })
+            .catch((err) => {
+                console.log(err);
+                res.status(500).json(err);
+            });
     }
 };
 
