@@ -1,11 +1,11 @@
-const { Schema, Types } = requrie('mongoose');
+const { Schema, Types } = require('mongoose');
 const dateFormat = require("../utils/dateFormat");
 
 const reactionSchema = new Schema(
     {
         reactionId: {
-            type: Schema.Types.OjectId,
-            default: () => new Types.OjectId();
+            type: Schema.Types.ObjectId,
+            default: () => new Types.OjectId()
         },
         reactionBody: {
             type: String,
