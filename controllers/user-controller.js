@@ -82,10 +82,46 @@ const userController = {
                 console.log(err);
                 res.status(500).json(err);
             });
+    },
+
+    //POST friend
+    postFriend(req, res) {
+        User.findOneAndUpdate(
+            { _id: req.params.userId },
+            { $addToSet: { friends: req.params.friendId }},
+            { new: true }
+            )
+            .then((dbUserData) => {
+                if (!dbUserData) {
+                    return res.status(404).json({ message: "Invalid userID" });
+                }
+                res.json(dbUserData);
+            })
+            .catch((err) => {
+                console.log(err);
+                res.status(500).json(err);
+            });
+    },
+
+    //DELETE friend
+    delFriend(req, res) {
+        User.findOneAndUpdate(
+            { _id: req.params.userId },
+            { $pull: { friends: req.params.friendId }},
+            { new: true }
+            )
+            .then((dbUserData) => {
+                if (!dbUserData) {
+                    return res.status(404).json({ message: "Invalid userID!" });
+                }
+                res.json(dbUserData);
+            })
+            .catch((err) => {
+                console.log(err);
+                res.status(500).json(err);
+            });
     }
 
-
-    
 };
 
 module.exports = userController;
